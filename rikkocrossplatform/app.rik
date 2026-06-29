@@ -1,0 +1,8 @@
+HEADER: custom_win
+
+CONTENT: [{type: "window", name: "RIKKO App Workspace", path: "index.html", style: "min-width: 900px; min-height: 650px;"}]
+
+BRIDGE:
+GetLocation() => RIKKO.Access.Location
+TriggerCamera() => RIKKO.Access.CameraFeed
+AdjustBrightness(val) => RIKKO.Set.Brightness

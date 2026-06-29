@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RIKKO Application Workspace</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e24;
+            color: #fff;
+            padding: 30px;
+            text-align: center;
+        }
+        button {
+            background: #6200ee;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #3700b3; }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background: #2a2a35;
+            border-radius: 6px;
+            min-height: 40px;
+            word-wrap: break-word;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 15px;
+            border: 2px solid #6200ee;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>RIKKO Electron Environment</h1>
+    <p>Interact with native OS bindings seamlessly using your `.rik` routing engine.</p>
+    
+    <button onclick="getLocation()">Fetch Location</button>
+    <button onclick="captureCamera()">Capture Camera Frame</button>
+    <button onclick="setBrightness(75)">Set Brightness to 75%</button>
+
+    <h3>Console Output Log</h3>
+    <div id="output">Click an operation above to invoke native code...</div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+
+        async function getLocation() {
+            try {
+                // Utilizing the universal IPC fallback wrapper exposed by preload.js
+                const res = await window.pywebview.api.callBridge('GetLocation');
+                outputDiv.innerText = `Result: ${res}`;
+            } catch (err) {
+                outputDiv.innerText = `Error: ${err.message}`;
+            }
+        }
+
+        async function setBrightness(level) {
+            try {
+                const res = await window.pywebview.api.callBridge('AdjustBrightness', level);
+                outputDiv.innerText = `Brightness updated to: ${res}%`;
+            } catch (err) {
+                outputDiv.innerText = `Error: ${err.message}`;
+            }
+        }
+
+        async function captureCamera() {
+            outputDiv.innerText = "Capturing device frames, please wait...";
+            try {
+                const base64DataUri = await window.pywebview.api.callBridge('TriggerCamera', 0);
+                outputDiv.innerHTML = `<p>Frame Capture Successful:</p><img src="${base64DataUri}" />`;
+            } catch (err) {
+                outputDiv.innerText = `Error: ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
